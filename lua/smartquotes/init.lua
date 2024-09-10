@@ -1,53 +1,16 @@
 local api = vim.api
-local utils = require("nvim-surround.utils")
-local buffer = require("nvim-surround.buffer")
-local config = require("nvim-surround.config")
-
--- Count unescaped quotes to the left of the cursor
-local function count_quotes_to_left(line, col, quote_char)
-  local count = 0
-  for i = 1, col do
-    if line:sub(i, i) == quote_char and (i == 1 or line:sub(i - 1, i - 1) ~= "\\") then
-      count = count + 1
-    end
-  end
-  return count
-end
-
--- Find the next unescaped quote position
-local function find_next_unescaped_quote(line, col, quote_chars)
-  for i = col + 1, #line do
-    local char = line:sub(i, i)
-    if vim.tbl_contains(quote_chars, char) then
-      if i == 1 or line:sub(i - 1, i - 1) ~= "\\" then
-        return i, char
-      end
-    end
-  end
-  return nil, nil
-end
-
--- Find matching quote
-local function find_matching_quote(line, start_pos, quote_char, direction)
-  local pos = direction == 1 and start_pos + 1 or start_pos - 1
-  local end_pos = direction == 1 and #line or 1
-  while pos >= 1 and pos <= #line do
-    if line:sub(pos, pos) == quote_char and (pos == 1 or line:sub(pos - 1, pos - 1) ~= "\\") then
-      return pos
-    end
-    pos = pos + direction
-  end
-  return nil
-end
+local nvim_surround_buffer = require("nvim-surround.buffer")
+local nvim_surround_config = require("nvim-surround.config")
+local utils = require("smartquotes.utils")
 
 -- Gets the nearest two selections for the left and right surrounding pair.
 ---@param char string? A character representing what kind of surrounding pair is to be selected.
 ---@param mode "i"|"a" Inside or around
 ---@return table A table containing the start and end positions of the delimiters.
 local function get_nearest_selections(char, mode)
-  char = config.get_alias(char)
-  local chars = config.get_opts().aliases[char] or { char }
-  local curpos = buffer.get_curpos()
+  char = nvim_surround_config.get_alias(char)
+  local chars = nvim_surround_config.get_opts().aliases[char] or { char }
+  local curpos = nvim_surround_buffer.get_curpos()
   local line = api.nvim_get_current_line()
   local col = curpos[2] - 1 -- 0-indexed for string operations
 
@@ -59,32 +22,32 @@ local function get_nearest_selections(char, mode)
     if is_on_quote then
       next_pos, quote_char = start_col + 1, current_char
     else
-      next_pos, quote_char = find_next_unescaped_quote(line, start_col, chars)
+      next_pos, quote_char = utils.find_next_unescaped_quote(line, start_col, chars)
     end
 
     if not next_pos then
       return nil
     end
 
-    local count_left = count_quotes_to_left(line, is_on_quote and start_col or next_pos - 1, quote_char)
+    local count_left = utils.count_quotes_to_left(line, is_on_quote and start_col or next_pos - 1, quote_char)
     local is_opening = count_left % 2 == 0
     local start_pos, end_pos
 
     if is_on_quote then
       if is_opening then
         start_pos = { curpos[1], next_pos }
-        end_pos = { curpos[1], find_matching_quote(line, next_pos, quote_char, 1) or next_pos }
+        end_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, 1) or next_pos }
       else
         end_pos = { curpos[1], next_pos }
-        start_pos = { curpos[1], find_matching_quote(line, next_pos, quote_char, -1) or next_pos }
+        start_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, -1) or next_pos }
       end
     else
       if is_opening then
         start_pos = { curpos[1], next_pos }
-        end_pos = { curpos[1], find_matching_quote(line, next_pos, quote_char, 1) or next_pos }
+        end_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, 1) or next_pos }
       else
         end_pos = { curpos[1], next_pos }
-        start_pos = { curpos[1], find_matching_quote(line, next_pos, quote_char, -1) or next_pos }
+        start_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, -1) or next_pos }
       end
     end
 
@@ -103,7 +66,7 @@ local function get_nearest_selections(char, mode)
     }
   end
 
-  return find_quote_pair(col)
+  return utils.find_quote_pair(col)
 end
 
 --- quote textobject
