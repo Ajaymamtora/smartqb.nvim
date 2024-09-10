@@ -3,6 +3,18 @@ local utils = require("nvim-surround.utils")
 local buffer = require("nvim-surround.buffer")
 local config = require("nvim-surround.config")
 
+local M = {}
+
+-- Default configuration
+M.config = {
+  key = "q",
+}
+
+-- Setup function
+function M.setup(opts)
+  M.config = vim.tbl_deep_extend("force", M.config, opts or {})
+end
+
 -- Count unescaped quotes to the left of the cursor
 local function count_quotes_to_left(line, col, quote_char)
   local count = 0
@@ -108,7 +120,7 @@ end
 
 --- quote textobject
 ---@param mode 'i'|'a' Inside or around
-local function quote_textobj(mode)
+function M.quote_textobj(mode)
   local nearest_selections = get_nearest_selections("q", mode)
   if nearest_selections then
     local left_pos = nearest_selections.left.first_pos
@@ -139,10 +151,20 @@ local function quote_textobj(mode)
   end
 end
 
-vim.keymap.set({ "x", "o" }, "aq", function()
-  quote_textobj("a")
-end, { desc = "around the quote" })
+-- Function to set up keymaps
+local function setup_keymaps()
+  vim.keymap.set({ "x", "o" }, "a" .. M.config.key, function()
+    M.quote_textobj("a")
+  end, { desc = "around the quote" })
 
-vim.keymap.set({ "x", "o" }, "iq", function()
-  quote_textobj("i")
-end, { desc = "inside the quote" })
+  vim.keymap.set({ "x", "o" }, "i" .. M.config.key, function()
+    M.quote_textobj("i")
+  end, { desc = "inside the quote" })
+end
+
+-- Call setup_keymaps after setup
+function M.post_setup()
+  setup_keymaps()
+end
+
+return M
