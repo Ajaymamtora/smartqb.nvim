@@ -12,7 +12,6 @@ M.config = {
 
 -- Setup function
 function M.setup(opts)
-  print(vim.inspect(opts))
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
   M.setup_keymaps()
