@@ -1,5 +1,5 @@
 local api = vim.api
-local utils = require("smart_quotes.utils")
+local utils = require("lua.smart-quotes.utils")
 
 local M = {}
 
