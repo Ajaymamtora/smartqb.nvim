@@ -1,5 +1,5 @@
-local config = require("smart-quotes.config")
-local textobj = require("smart_quotes.textobj")
+local config = require("smartquotes.config")
+local textobj = require("smartquotes.textobj")
 
 ---@class QuoteTextObj
 local M = {}
