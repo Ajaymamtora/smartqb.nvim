@@ -6,7 +6,7 @@ local M = {}
 
 ---@param args Config?
 -- Setup function to initialize the plugin with user configurations
-M.setup = function(args)
+function M.setup(args)
   config.setup(args)
 
   -- Set up keymaps for the quote textobject
