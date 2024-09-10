@@ -1,4 +1,4 @@
-local config = require("lua.smart-quotes.config")
+local config = require("smart-quotes.config")
 local textobj = require("smart_quotes.textobj")
 
 ---@class QuoteTextObj
