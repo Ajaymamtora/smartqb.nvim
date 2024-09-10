@@ -4,72 +4,97 @@ local buffer = require("smartquotes.buffer")
 
 local M = {}
 
-local function get_nearest_selections(char, mode)
+local function find_next_quote(line, start, chars)
+  for i = start, #line do
+    if vim.tbl_contains(chars, line:sub(i, i)) then
+      return i
+    end
+  end
+  return nil
+end
+
+local function find_matching_quote(line, start, chars)
+  local nested = 0
+  for i = start + 1, #line do
+    if vim.tbl_contains(chars, line:sub(i, i)) then
+      if nested == 0 then
+        return i
+      end
+      nested = nested - 1
+    end
+  end
+  return nil
+end
+
+local function get_inner_quote_selection(char)
   local chars = { char }
   local curpos = buffer.get_curpos()
   local line = api.nvim_get_current_line()
-  local col = curpos[2] - 1 -- 0-indexed for string operations
+  local col = curpos[2]
 
-  local function find_quote_pair(start_col)
-    local current_char = line:sub(start_col + 1, start_col + 1)
-    local is_on_quote = vim.tbl_contains(chars, current_char)
-
-    local next_pos, quote_char
-    if is_on_quote then
-      next_pos, quote_char = start_col + 1, current_char
-    else
-      next_pos, quote_char = utils.find_next_unescaped_quote(line, start_col, chars)
-    end
-
-    if not next_pos then
+  local function find_valid_pair(start)
+    local left_quote = find_next_quote(line, start, chars)
+    if not left_quote then
       return nil
     end
 
-    local count_left = utils.count_quotes_to_left(line, is_on_quote and start_col or next_pos - 1, quote_char)
-    local is_opening = count_left % 2 == 0
-    local start_pos, end_pos
-
-    if is_on_quote then
-      if is_opening then
-        start_pos = { curpos[1], next_pos }
-        end_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, 1) or next_pos }
-      else
-        end_pos = { curpos[1], next_pos }
-        start_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, -1) or next_pos }
-      end
-    else
-      if is_opening then
-        start_pos = { curpos[1], next_pos }
-        end_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, 1) or next_pos }
-      else
-        end_pos = { curpos[1], next_pos }
-        start_pos = { curpos[1], utils.find_matching_quote(line, next_pos, quote_char, -1) or next_pos }
-      end
-    end
-
-    if not start_pos[2] or not end_pos[2] then
+    local right_quote = find_matching_quote(line, left_quote, chars)
+    if not right_quote then
       return nil
     end
 
-    if mode == "i" then
-      start_pos[2] = start_pos[2] + 1
-      end_pos[2] = end_pos[2] - 1
+    if right_quote - left_quote > 1 then
+      return left_quote, right_quote
+    else
+      return find_valid_pair(right_quote + 1)
     end
-
-    return {
-      left = { first_pos = start_pos },
-      right = { first_pos = end_pos },
-    }
   end
 
-  return find_quote_pair(col)
+  local left_quote, right_quote = find_valid_pair(1)
+
+  if not left_quote or not right_quote then
+    return nil
+  end
+
+  return {
+    left = { first_pos = { curpos[1], left_quote + 1 } },
+    right = { first_pos = { curpos[1], right_quote - 1 } },
+  }
+end
+
+local function get_around_quote_selection(char)
+  local chars = { char }
+  local curpos = buffer.get_curpos()
+  local line = api.nvim_get_current_line()
+  local col = curpos[2]
+
+  local left_quote = find_next_quote(line, 1, chars)
+  if not left_quote then
+    return nil
+  end
+
+  local right_quote = find_matching_quote(line, left_quote, chars)
+  if not right_quote then
+    return nil
+  end
+
+  return {
+    left = { first_pos = { curpos[1], left_quote } },
+    right = { first_pos = { curpos[1], right_quote } },
+  }
 end
 
 function M.quote_textobj(mode)
-  local nearest_selections = get_nearest_selections("q", mode)
-  if nearest_selections then
-    local left_pos = nearest_selections.left.first_pos
-    local right_pos = nearest_selections.right.first_pos
+  local selections
+  if mode == "i" then
+    selections = get_inner_quote_selection("q")
+  else
+    selections = get_around_quote_selection("q")
+  end
+
+  if selections then
+    local left_pos = selections.left.first_pos
+    local right_pos = selections.right.first_pos
 
     local current_mode = vim.fn.mode()
 
