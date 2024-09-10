@@ -21,6 +21,7 @@ end
 ---@param args Config?
 -- Setup function to initialize the plugin with user configurations
 function M.setup(args)
+  print(vim.inspect(args))
   -- If setup is called directly, use the provided args
   setup_plugin(args)
 end
