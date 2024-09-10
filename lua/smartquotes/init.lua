@@ -7,6 +7,7 @@ local M = {}
 ---@param args Config?
 -- Setup function to initialize the plugin with user configurations
 function M.setup(args)
+  print(vim.inspect(args))
   config.setup(args)
 
   -- Set up keymaps for the quote textobject
