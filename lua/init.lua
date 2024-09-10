@@ -1,5 +1,3 @@
--- init.lua
-
 local config = require("smart_quotes.config")
 local textobj = require("smart_quotes.textobj")
 
