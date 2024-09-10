@@ -14,6 +14,8 @@ M.config = {
 function M.setup(opts)
   print(vim.inspect(opts))
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
+
+  M.setup_keymaps()
 end
 
 -- Count unescaped quotes to the left of the cursor
@@ -153,7 +155,7 @@ function M.quote_textobj(mode)
 end
 
 -- Function to set up keymaps
-local function setup_keymaps()
+function M.setup_keymaps()
   vim.keymap.set({ "x", "o" }, "a" .. M.config.key, function()
     M.quote_textobj("a")
   end, { desc = "around the quote" })
@@ -161,11 +163,6 @@ local function setup_keymaps()
   vim.keymap.set({ "x", "o" }, "i" .. M.config.key, function()
     M.quote_textobj("i")
   end, { desc = "inside the quote" })
-end
-
--- Call setup_keymaps after setup
-function M.post_setup()
-  setup_keymaps()
 end
 
 return M
