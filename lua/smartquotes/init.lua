@@ -2,6 +2,7 @@ local api = vim.api
 local utils = require("nvim-surround.utils")
 local buffer = require("nvim-surround.buffer")
 local config = require("nvim-surround.config")
+local keymaps = require("smartquotes.keymaps")
 
 local M = {}
 
@@ -10,11 +11,14 @@ M.config = {
   quotekey = "q",
 }
 
--- Setup function
 function M.setup(opts)
-  M.config = vim.tbl_deep_extend("force", M.config, opts or {})
-
-  M.setup_keymaps()
+  opts = opts or {}
+  local user_config = {
+    quotekey = opts.quotekey or config.default_config.quotekey,
+    bracketkey = opts.bracketkey or config.default_config.bracketkey,
+  }
+  config.setup(user_config)
+  keymaps.setup()
 end
 
 -- Count unescaped quotes to the left of the cursor
@@ -151,17 +155,6 @@ function M.quote_textobj(mode)
       vim.fn.cursor(right_pos[1], right_pos[2])
     end
   end
-end
-
--- Function to set up keymaps
-function M.setup_keymaps()
-  vim.keymap.set({ "x", "o" }, "a" .. M.config.quotekey, function()
-    M.quote_textobj("a")
-  end, { desc = "around the quote" })
-
-  vim.keymap.set({ "x", "o" }, "i" .. M.config.quotekey, function()
-    M.quote_textobj("i")
-  end, { desc = "inside the quote" })
 end
 
 return M

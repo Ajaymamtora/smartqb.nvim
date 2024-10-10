@@ -2,6 +2,7 @@ local M = {}
 
 M.default_config = {
   quotekey = "q",
+  bracketkey = "b",
 }
 
 M.config = M.default_config
