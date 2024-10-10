@@ -155,11 +155,11 @@ end
 
 -- Function to set up keymaps
 function M.setup_keymaps()
-  vim.keymap.set({ "x", "o" }, "a" .. M.config.key, function()
+  vim.keymap.set({ "x", "o" }, "a" .. M.config.quotekey, function()
     M.quote_textobj("a")
   end, { desc = "around the quote" })
 
-  vim.keymap.set({ "x", "o" }, "i" .. M.config.key, function()
+  vim.keymap.set({ "x", "o" }, "i" .. M.config.quotekey, function()
     M.quote_textobj("i")
   end, { desc = "inside the quote" })
 end

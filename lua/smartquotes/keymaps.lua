@@ -4,7 +4,7 @@ local textobj = require("smartquotes.textobj")
 local M = {}
 
 function M.setup()
-  local key = config.get_config().key
+  local key = config.get_config().quotekey
 
   vim.keymap.set({ "x", "o" }, "a" .. key, function()
     textobj.quote_textobj("a")
