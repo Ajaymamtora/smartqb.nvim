@@ -1,7 +1,7 @@
 local M = {}
 
 M.default_config = {
-  key = "q",
+  quotekey = "q",
 }
 
 M.config = M.default_config

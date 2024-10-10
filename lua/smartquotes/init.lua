@@ -7,7 +7,7 @@ local M = {}
 
 -- Default configuration
 M.config = {
-  key = "q",
+  quotekey = "q",
 }
 
 -- Setup function
