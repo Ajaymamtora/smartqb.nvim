@@ -100,4 +100,34 @@ function M.find_delimiter_pair(start_col, chars, line, curpos)
   return { start_pos = start_pos, end_pos = end_pos }
 end
 
+--- Determines if a character is an opening bracket
+---@param char string The character to check
+---@return boolean True if the character is an opening bracket, false otherwise
+function M.is_opening_bracket(char)
+  return vim.tbl_contains({ "{", "(", "[" }, char)
+end
+
+--- Determines if a character is a closing bracket
+---@param char string The character to check
+---@return boolean True if the character is a closing bracket, false otherwise
+function M.is_closing_bracket(char)
+  return vim.tbl_contains({ "}", ")", "]" }, char)
+end
+
+--- Gets the matching closing bracket for an opening bracket
+---@param opening_char string The opening bracket character
+---@return string The matching closing bracket character
+function M.get_matching_closing_bracket(opening_char)
+  local pairs = { ["{"] = "}", ["("] = ")", ["["] = "]" }
+  return pairs[opening_char]
+end
+
+--- Gets the matching opening bracket for a closing bracket
+---@param closing_char string The closing bracket character
+---@return string The matching opening bracket character
+function M.get_matching_opening_bracket(closing_char)
+  local pairs = { ["}"] = "{", [")"] = "(", ["]"] = "[" }
+  return pairs[closing_char]
+end
+
 return M
