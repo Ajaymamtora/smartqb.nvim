@@ -1,10 +1,10 @@
 local api = vim.api
-local utils = require("smartqb.utils")
-local buffer = require("smartqb.buffer")
+local utils = require("smartquotes.utils")
+local buffer = require("smartquotes.buffer")
 
 local M = {}
 
-local function find_next_qb(line, start, chars)
+local function find_next_quote(line, start, chars)
   for i = start, #line do
     if vim.tbl_contains(chars, line:sub(i, i)) then
       return i
@@ -13,7 +13,7 @@ local function find_next_qb(line, start, chars)
   return nil
 end
 
-local function find_matching_qb(line, start, chars)
+local function find_matching_quote(line, start, chars)
   local nested = 0
   for i = start + 1, #line do
     if vim.tbl_contains(chars, line:sub(i, i)) then
@@ -33,12 +33,12 @@ local function get_inner_quote_selection(char)
   local col = curpos[2]
 
   local function find_valid_pair(start)
-    local left_quote = find_next_qb(line, start, chars)
+    local left_quote = find_next_quote(line, start, chars)
     if not left_quote then
       return nil
     end
 
-    local right_quote = find_matching_qb(line, left_quote, chars)
+    local right_quote = find_matching_quote(line, left_quote, chars)
     if not right_quote then
       return nil
     end
@@ -68,12 +68,12 @@ local function get_around_quote_selection(char)
   local line = api.nvim_get_current_line()
   local col = curpos[2]
 
-  local left_quote = find_next_qb(line, 1, chars)
+  local left_quote = find_next_quote(line, 1, chars)
   if not left_quote then
     return nil
   end
 
-  local right_quote = find_matching_qb(line, left_quote, chars)
+  local right_quote = find_matching_quote(line, left_quote, chars)
   if not right_quote then
     return nil
   end
