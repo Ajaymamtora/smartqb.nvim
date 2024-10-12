@@ -34,4 +34,8 @@ function M.find_matching_quote(line, start_pos, quote_char, direction)
   return nil
 end
 
+function M.get_curpos()
+  return vim.api.nvim_win_get_cursor(0)
+end
+
 return M
