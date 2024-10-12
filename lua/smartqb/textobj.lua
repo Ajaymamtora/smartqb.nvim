@@ -1,5 +1,6 @@
 local api = vim.api
 local utils = require("smartqb.utils")
+local buffer = require("nvim-surround.buffer")
 
 local M = {}
 
@@ -27,7 +28,7 @@ end
 
 local function get_inner_quote_selection(char)
   local chars = { char }
-  local curpos = utils.get_curpos()
+  local curpos = buffer.get_curpos()
   local line = api.nvim_get_current_line()
   local col = curpos[2]
 
@@ -63,7 +64,7 @@ end
 
 local function get_around_quote_selection(char)
   local chars = { char }
-  local curpos = utils.get_curpos()
+  local curpos = buffer.get_curpos()
   local line = api.nvim_get_current_line()
   local col = curpos[2]
 
