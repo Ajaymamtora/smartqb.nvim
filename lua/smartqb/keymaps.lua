@@ -1,5 +1,5 @@
-local config = require("smartquotes.config")
-local textobj = require("smartquotes.textobj")
+local config = require("smartqb.config")
+local textobj = require("smartqb.textobj")
 
 local M = {}
 
