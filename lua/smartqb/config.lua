@@ -2,8 +2,10 @@ local M = {}
 
 M.default_config = {
   quotekey = "q",
+  bracketkey = "b",
   aliases = {
     ["q"] = { "'", '"', "`" },
+    ["b"] = { "{", "}", "(", ")", "[", "]" },
   },
 }
 
@@ -25,7 +27,7 @@ end
 ---@param char string The character to get the alias for
 ---@return string The alias for the given character
 function M.get_alias(char)
-  return char or M.config.quotekey
+  return char
 end
 
 --- Get the options for the plugin
