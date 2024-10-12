@@ -1,5 +1,5 @@
 local api = vim.api
-local utils = require("smartquotes.utils")
+local utils = require("smartqb.utils")
 
 local M = {}
 
