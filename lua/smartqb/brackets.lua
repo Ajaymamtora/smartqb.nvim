@@ -44,6 +44,23 @@ function M.get_nearest_selections(mode)
   local col = curpos[2] - 1 -- 0-indexed for string operations
 
   local function find_bracket_pair(start_col)
+    -- Look forward for the next bracket
+    for i = start_col + 1, #line do
+      local current_char = line:sub(i, i)
+      if utils.is_opening_bracket(current_char) then
+        local end_pos = find_matching_bracket(line, i, current_char, 1)
+        if end_pos then
+          return { start_pos = { curpos[1], i }, end_pos = { curpos[1], end_pos } }
+        end
+      elseif utils.is_closing_bracket(current_char) then
+        local start_pos = find_matching_bracket(line, i, current_char, -1)
+        if start_pos then
+          return { start_pos = { curpos[1], start_pos }, end_pos = { curpos[1], i } }
+        end
+      end
+    end
+
+    -- If no bracket found forward, look backward
     for i = start_col, 1, -1 do
       local current_char = line:sub(i, i)
       if utils.is_opening_bracket(current_char) then
