@@ -14,33 +14,37 @@ end
 -- Function to set up keymaps
 function M.setup_keymaps()
   local quotekey = config.get_config().quotekey
-  vim.keymap.set(
-    { "x", "o" },
-    "a" .. quotekey,
-    textobj.create_textobject(quotes.get_nearest_selections, "a"),
-    { desc = "around the quote" }
-  )
-  vim.keymap.set(
-    { "x", "o" },
-    "i" .. quotekey,
-    textobj.create_textobject(quotes.get_nearest_selections, "i"),
-    { desc = "inside the quote" }
-  )
+  if quotekey then
+    vim.keymap.set(
+      { "x", "o" },
+      "a" .. quotekey,
+      textobj.create_textobject(quotes.get_nearest_selections, "a"),
+      { desc = "around the quote" }
+    )
+    vim.keymap.set(
+      { "x", "o" },
+      "i" .. quotekey,
+      textobj.create_textobject(quotes.get_nearest_selections, "i"),
+      { desc = "inside the quote" }
+    )
+  end
 
   local bracketkey = config.get_config().bracketkey
-  -- Add keymaps for brackets
-  vim.keymap.set(
-    { "x", "o" },
-    "a" .. bracketkey,
-    textobj.create_textobject(brackets.get_nearest_selections, "a"),
-    { desc = "around the bracket" }
-  )
-  vim.keymap.set(
-    { "x", "o" },
-    "i" .. bracketkey,
-    textobj.create_textobject(brackets.get_nearest_selections, "i"),
-    { desc = "inside the bracket" }
-  )
+  if bracketkey then
+    -- Add keymaps for brackets
+    vim.keymap.set(
+      { "x", "o" },
+      "a" .. bracketkey,
+      textobj.create_textobject(brackets.get_nearest_selections, "a"),
+      { desc = "around the bracket" }
+    )
+    vim.keymap.set(
+      { "x", "o" },
+      "i" .. bracketkey,
+      textobj.create_textobject(brackets.get_nearest_selections, "i"),
+      { desc = "inside the bracket" }
+    )
+  end
 end
 
 return M
