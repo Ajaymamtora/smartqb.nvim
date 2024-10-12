@@ -14,7 +14,7 @@ end
 -- Function to set up keymaps
 function M.setup_keymaps()
   local quotekey = config.get_config().quotekey
-  if quotekey then
+  if quotekey and quotekey ~= "" then
     vim.keymap.set(
       { "x", "o" },
       "a" .. quotekey,
@@ -30,7 +30,7 @@ function M.setup_keymaps()
   end
 
   local bracketkey = config.get_config().bracketkey
-  if bracketkey then
+  if bracketkey and bracketkey ~= "" then
     -- Add keymaps for brackets
     vim.keymap.set(
       { "x", "o" },
